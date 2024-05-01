@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,9 @@ SECRET_KEY = 'django-insecure-v&7tm6s%$#@-xa&_+vuz5$em#eog%o%yi!)gmmi=7ovo2g(o-4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
+USE_DEFAULT_AUTH = True
 
 # Application definition
 
@@ -37,6 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+
+    # Requirements
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    #apps
+    "authmoth",
 ]
 
 MIDDLEWARE = [
@@ -72,12 +83,21 @@ WSGI_APPLICATION = 'anyaccess.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+postgres = {
+        'ENGINE': os.environ.get('DB_DRIVER','django.db.backends.postgresql'),
+        'USER': os.environ.get('PG_USER','postgres'),
+        'PASSWORD':os.environ.get('PG_PASSWORD','postgres'),
+        'NAME': os.environ.get('PG_DB','postgres'),
+        'PORT': os.environ.get('PG_PORT','5432'),
+        'HOST': os.environ.get('PG_HOST','localhost'), # uses the container if set, otherwise it runs locally
+    }
 
 DATABASES = {
-    'default': {
+    'default': postgres,
+    "sqlite" : {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
 }
 
 
@@ -110,6 +130,16 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        "authmoth.custom_auth.CustomAuth",
+        # 'rest_framework.authentication.SessionAuthentication',
+    ),
+}
 
 
 # Static files (CSS, JavaScript, Images)
