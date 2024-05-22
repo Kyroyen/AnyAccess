@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import Token
+from utils.get_reqtotoken import request_to_auth_token
+from rest_framework.exceptions import AuthenticationFailed
+from .google_api import google_token_verify
 
-# Create your views here.
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+

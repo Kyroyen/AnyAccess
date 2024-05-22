@@ -1,4 +1,5 @@
 from rest_framework.authentication import TokenAuthentication as BaseTokenAuthentication
+from utils.get_reqtotoken import request_to_auth_token
 from rest_framework.exceptions import AuthenticationFailed
 from jwt import decode
 
@@ -12,19 +13,8 @@ class CustomAuth(BaseTokenAuthentication):
     decode_algo = ["HS256"]
 
     def authenticate(self, request):
-        if 
-
-        auth = request.META.get('HTTP_AUTHORIZATION').split()
-        # print(auth)
-
-        if len(auth) == 1:
-            msg = ('Invalid token header. No credentials provided.')
-            raise AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = ('Invalid token header. Token string should not contain spaces.')
-            raise AuthenticationFailed(msg)
         
-        secret_token = auth[1]
+        auth_type, secret_token = request_to_auth_token(request)
 
         try:
             # print(secret_token)
