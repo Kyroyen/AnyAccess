@@ -69,4 +69,4 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if self.Meta.model.objects.filter(email=value).exists():
             raise ValidationError("Email should be unique")
         return True
-        
+
