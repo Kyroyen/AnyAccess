@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
 
-from .models import AppUser
+from .models import AppUser, UserFiles, FileSession
 from authmoth.google_api import google_token_verify
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -70,3 +70,90 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise ValidationError("Email should be unique")
         return True
 
+class UserFileUploadSerializer(serializers.ModelSerializer):
+    # file_save = serializers.FileField(required = True, write_only = True,)
+
+    class Meta:
+        model = UserFiles
+        fields = [
+            "user",
+            "origin",
+            "file_save",
+            "file_uuid",
+            "file_name",
+        ]
+        extra_kwargs = {
+            "user" : {
+                "write_only" : True,
+                "required" : True,
+            },
+            "origin" : {
+                "required" : True,
+            },
+            "file_save" : {
+                "required" : True,
+                "write_only" : True,
+            },
+            "file_uuid" : {
+                "read_only" : True,
+            },
+            "file_name" : {
+                "read_only" : True,
+            },
+        }
+    
+    def to_internal_value(self, data):
+        data["user"] = data.pop("user").pk
+        temp = super().to_internal_value(data)
+        print("tiv", temp)
+        return temp
+    
+    def to_representation(self, instance):
+        temp = super().to_representation(instance)
+        print("to_repre", instance, temp)
+        return temp
+    
+class UserFileDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFiles
+        fields = [
+            "origin",
+            "file_uuid",
+            "file_name",
+        ]
+
+
+class FileSessionCreateSerializer(serializers.ModelSerializer):
+    files = serializers.PrimaryKeyRelatedField(
+        queryset = UserFiles.objects.all(),
+        many = True,
+    )
+
+    class Meta:
+        model = FileSession
+        fields = [
+            "user",
+            "files",
+            "session_id",
+            "session_otp",
+            "timeout",
+        ]
+        extra_kwargs = {
+            "user" : {
+                "required" : True,
+                "write_only" : True,
+            },
+            "files" : {
+                "required" : True,
+            },
+            "session_id" : {
+                "read_only" : True,
+            },
+            "session_otp" : {
+                "read_only" : True,
+            },
+        }
+    
+    def to_internal_value(self, data):
+        data["user"] = data.pop("user").pk
+        return super().to_internal_value(data)

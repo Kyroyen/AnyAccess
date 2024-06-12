@@ -3,9 +3,10 @@ from django.conf import settings
 from dropbox import Dropbox
 from storages.backends.dropbox import DropboxStorage
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.utils import timezone
 
 from utils.get_uuid import get_unique_id
-
+from utils.get_uuid import generate_otp
 from .CustomStorage import FakeStorage
 
 class AppUser(AbstractUser, PermissionsMixin):
@@ -28,5 +29,19 @@ class UserFiles(models.Model):
         self.file_save.storage = FakeStorage()
 
         return super().save(*args, **kwargs)
-        
 
+class FileSession(models.Model):
+    user = models.ForeignKey(AppUser, on_delete=models.CASCADE, related_name="session_owner")
+    files = models.ManyToManyField(UserFiles, related_name="files_included")
+    session_id = models.UUIDField(default=get_unique_id, primary_key=True)
+    session_otp = models.IntegerField(default=generate_otp)
+    created_at = models.DateTimeField(auto_now=True)
+    opened = models.BooleanField(default=False)
+    timeout = models.TimeField(default=timezone.timedelta(minutes=10))
+
+    class Meta:
+        unique_together = ["user", "session_otp"]
+
+    @property
+    def timed_out(self):
+        return (timezone.now() > self.created_at + self.timed_out)
