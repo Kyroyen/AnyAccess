@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # apps
     "api_v1",
     "authmoth",
+    "webunauth",
 
     # storage
     'storages',

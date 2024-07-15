@@ -9,5 +9,4 @@ urlpatterns = [
 
     path("session/", FileSessionViewSet.as_view({"post":"create", "get":"retrieve", "put":"list"}), name="user-sessions"),
 
-
 ]

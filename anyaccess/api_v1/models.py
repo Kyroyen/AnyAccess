@@ -44,4 +44,7 @@ class FileSession(models.Model):
 
     @property
     def timed_out(self):
-        return (timezone.now() > self.created_at + self.timed_out)
+        print("tola")
+        ans = (timezone.now() > self.created_at + timezone.timedelta(self.timeout))
+        print("tola", ans)
+        return ans
