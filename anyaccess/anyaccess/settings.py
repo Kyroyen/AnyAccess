@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "api_v1",
     "authmoth",
     "webunauth",
+    "fileserverhandling",
 
     # storage
     'storages',
@@ -189,6 +190,10 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+TEMP_FILE_URL = BASE_DIR.joinpath("tempfiles")
+# print("TEMP_FILE_URL",TEMP_FILE_URL)
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
