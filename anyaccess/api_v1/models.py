@@ -4,6 +4,7 @@ from dropbox import Dropbox
 from storages.backends.dropbox import DropboxStorage
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.utils import timezone
+from datetime import datetime
 
 from utils.get_uuid import get_unique_id
 from utils.get_uuid import generate_otp
@@ -43,8 +44,10 @@ class FileSession(models.Model):
         unique_together = ["user", "session_otp"]
 
     @property
+    def timeout_at(self):
+        return self.created_at + timezone.timedelta(hours=self.timeout.hour, minutes=self.timeout.minute)
+
+    @property
     def timed_out(self):
-        print("tola")
-        ans = (timezone.now() > self.created_at + timezone.timedelta(self.timeout))
-        print("tola", ans)
+        ans = (timezone.now() > self.timeout_at)
         return ans

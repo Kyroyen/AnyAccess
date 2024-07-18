@@ -66,8 +66,8 @@ class FileSessionViewSet(ViewSet):
 
     def create(self, request):
         data = request.data
+        print(data)
         data["user"] = request.user
-        # print(data)
         
         serialzier = self.serializer_class(data = data)
         if serialzier.is_valid():
