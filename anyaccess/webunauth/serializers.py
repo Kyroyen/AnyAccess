@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from asgiref.sync import async_to_sync
 
-from api_v1.models import FileSession, AppUser
+from api_v1.models import FileSession, AppUser, UserFiles
 
 class UnauthOTPSessionSerializer(object):
     
@@ -21,8 +21,6 @@ class UnauthOTPSessionSerializer(object):
     
     def get_valid_instance(self, data):
         instance = self.get_instance_thunder(data)
-        # print("whu--------t",instance.created_at)
-        # print("whut",instance.timed_out)
         
         if instance.timed_out or instance.opened:
             raise Exception("This session doesn't exists or has timed out")
@@ -32,7 +30,11 @@ class UnauthOTPSessionSerializer(object):
         async_to_sync(instance.asave)()
                 
         return instance
-        
-    
 
+class OutViewFileListSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = UserFiles
+        fields = ['file_name']
+    
     

@@ -11,6 +11,7 @@ from cloudinary_utils.download_cloudinary_file import cloudinary_file_downloader
 @receiver(signals.pre_save, sender = FileSession)
 def downloadWhenUpdated(sender, instance,  **kwargs):
     if instance.opened:
+        print("Opened File Session")
         # print(instance.files.first().file_url, instance.files.first().file_uuid, instance.files.first().file_name)
         file_data = tuple(FileDownloadData(i.file_url, i.file_uuid, i.file_name) for i in instance.files.all())
         t1= threading.Thread(target=start_with_async_downloading, args=(file_data,))
